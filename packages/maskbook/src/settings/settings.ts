@@ -4,6 +4,7 @@ import i18nNextInstance, { i18n } from '../utils/i18n-next'
 import { sideEffect } from '../utils/side-effects'
 import { ChainId } from '../web3/types'
 import { Appearance, Language, LaunchPage } from './types'
+import { TransactionProvider } from '../plugins/Wallet/types'
 
 /**
  * Does the debug mode on
@@ -62,6 +63,16 @@ export const currentWalletConnectChainIdSettings = createGlobalSettings<ChainId>
         primary: () => 'DO NOT DISPLAY IT IN UI',
     },
 )
+
+export const currentWalletConnectSourceSettings = createGlobalSettings<TransactionProvider>(
+    "walletConnct Source",
+    TransactionProvider.ZERION,
+    {
+        primary: () => "Wallet connect Source",
+        secondary: () => 'This is wallet connect source',
+    },
+)
+
 //#endregion
 
 //#region language

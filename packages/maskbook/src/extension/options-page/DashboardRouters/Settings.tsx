@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import  { useRef } from 'react'
 import { Typography, Card, List, Paper } from '@material-ui/core'
 import { makeStyles, createStyles, ThemeProvider, useTheme } from '@material-ui/core/styles'
 
@@ -12,6 +12,7 @@ import {
     currentMaskbookChainIdSettings,
     enableGroupSharingSettings,
     launchPageSettings,
+    currentWalletConnectSourceSettings,
 } from '../../../settings/settings'
 import { Appearance, LaunchPage, Language } from '../../../settings/types'
 import { useMatchXS } from '../../../utils/hooks/useMatchXS'
@@ -38,6 +39,7 @@ import { resolveDataProviderName, resolveTradeProviderName } from '../../../plug
 import { DataProvider, TradeProvider } from '../../../plugins/Trader/types'
 import { ChainId } from '../../../web3/types'
 import { extendsTheme } from '../../../utils/theme'
+import { TransactionProvider } from '../../../plugins/Wallet/types'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -178,6 +180,12 @@ export default function DashboardSettingsRouter() {
                                     getText={appearanceMapper}
                                     icon={<PaletteIcon />}
                                     value={appearanceSettings}
+                                />
+                                <SettingsUIEnum
+                                    classes={listStyle}
+                                    enumObject={TransactionProvider}
+                                    icon={<TrendingUpIcon />}
+                                    value={currentWalletConnectSourceSettings}
                                 />
                                 {Flags.support_eth_network_switch ? (
                                     <SettingsUIEnum

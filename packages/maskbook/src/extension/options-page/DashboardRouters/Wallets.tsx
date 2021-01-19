@@ -24,6 +24,7 @@ import { useAssetsDetailedCallback } from '../../../web3/hooks/useAssetsDetailed
 import { WalletContent } from '../DashboardComponents/WalletContent'
 import { EthereumStatusBar } from '../../../web3/UI/EthereumStatusBar'
 import { extendsTheme } from '../../../utils/theme'
+import { useTransactions } from '../../../plugins/Wallet/hooks/useTransactions'
 
 //#region theme
 const walletsTheme = extendsTheme((theme) => ({
@@ -105,6 +106,10 @@ export default function DashboardWalletsRouter() {
     const selectedWallet = useWallet()
     const tokens = useTrustedERC20TokensFromDB()
     const { value: detailedTokens, retry: retryDetailedTokens } = useAssetsDetailedCallback(tokens)
+
+    const a = useTransactions()
+    console.log('----a----')
+    console.log(a)
 
     // show create dialog
     useEffect(() => {
