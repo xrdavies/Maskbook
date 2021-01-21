@@ -1,3 +1,4 @@
+import { stackOffsetExpand } from "d3"
 import { useAsync } from "react-use"
 import { PassThrough } from "stream"
 
@@ -7,9 +8,13 @@ import { PassThrough } from "stream"
 interface ZerionMeta {
     address: string
     addresses: string[]
-    asset_codes: string[]
+    asset_codes?: string[]
     currency: string
     status: string
+
+    transactions_limit?: number
+    transactions_offset?: number
+    transactions_search_query?: string|null
 }
 interface ZerionAsset {
     asset_code: string
@@ -26,38 +31,82 @@ interface ZerionAssets {
     quantity: string
 }
 
-interface AssetsMsg {
+
+interface ZerionTransacton {
+    address_from: string
+    address_to: string
+    block_number: number
+    changes: ZerionAsset[]
+    contract: string | null
+    direction: string | null
+    fee: {value: string, price: string} | null
+    hash: string
+    id: string
+    meta: {}
+    mined_at: number
+    nonce: number
+    protocol: string | null
+    status: string
+    type: string
+}
+
+export interface TransactionMsg {
     meta: ZerionMeta
     payload: {
-        assets: ZerionAssets[]
+        transactions: ZerionTransacton[]
     }
 }
 
-const subscribe = (path: string, account: string, scope: string[]) => {
+
+enum ZerionInterfaceType {
+    TYPE_COMPOUND = "compound",
+    TYPE_ASSETS = "assets",
+    TYPE_ADDRESS = 'address',
+    TYPE_NOTIFICATIONS = 'notifications',
+    TYPE_UNISWAP = 'uniswap',
+    TYPE_DYDX = 'dydx',
+    TYPE_BANCER = 'bancer',
+    TYPE_MAKER = 'maker',
+}
+enum ZerionAction {
+    ACTION_SUBSCRIBE = 'subscribe',
+    ACTION_UNSUBSCRIBE = 'unsubscribe',
+    ACTION_GET = 'get',
+}
+
+enum ZerionScope {
+    SCOPE_PORTFOLIO = "portfolio",
+    SCOPE_ASSETS = 'assets',
+    SCOPE_TRANSACTION = 'transactions',
+
+}
+
+const subscribe = (path: string, account: string, limit=30, offset=0) => {
     const d =  JSON.stringify([
         "subscribe", {
             payload: {
                 address: account,
                 currency: "usd",
-                portfolio_fields: "all",
+                transactions_limit:limit,
+                transactions_offset: offset,
             },
-            scope: scope,
+            scope: ["transactions"],
         }
     ])
 
     return `${path},${d}`
 }
 
-const get = (path: string, account: string, scope: string[]) => {
+const get = (path: string, account: string, limit: number, offset: number) => {
     const d = JSON.stringify([
         "get", {
             payload: {
                 address: account,
                 currency: "usd",
-                ransactions_limit: 30,
-                transactions_offset: 30,
+                ransactions_limit: limit,
+                transactions_offset:offset,
             },
-            scope: scope,
+            scope: ["transactions"],
         }
     ])
 
@@ -83,58 +132,44 @@ const WebsocketClient = (api_token: string) => {
       })
   }
 
-function GetZerionMessage<T>(api_token: string, account: string, path: string, message_type: string) {
-    return new Promise<{data: T}>((resolve, reject) => {
-        WebsocketClient(api_token).then((client) => {
+const GetTransactions = (api_token: string, account: string, limit=30, offset=0) => {
+    return new Promise<TransactionMsg>((resolve, reject) => {
+        const message_type = "transactions"
+        WebsocketClient(api_token)
+        .then((client) => {
             const scope: string[] = []
             scope.push(message_type)
-
             client.onopen = () => {
                 const params = new URLSearchParams()
                 params.append('api_token', api_token)
-                client.send(`40/${path}?${params.toString()}`)
-                client.send(subscribe(`42/${path}`, account, scope))
-            }
-
-            client.onerror =(ev) => {
-                console.log('connect error:', ev)
-            }
-            client.onclose = () => {
-                console.log('connect close')
+                client.send(`40/address?${params.toString()}`)
+                client.send(subscribe("42/address", account, limit, offset))
             }
             client.onmessage = (ev) => {
                 if (typeof ev.data !== 'string') {
                     return
                 }
-                if (!ev.data.startsWith(`42/${path}`)) {
+                if (!ev.data.startsWith(`42/address`)) {
                     return
                 }
                 try {
-                    const jsonData = JSON.parse(ev.data.slice(`42/${path},`.length))
-                    if (jsonData[0] === `received ${path} ${message_type}`) {
-                        resolve({data: jsonData[1]})
+                    const jsonData = JSON.parse(ev.data.slice(`42/address,`.length))
+                    if (jsonData[0] === `received address ${message_type}`) {
+                        resolve(jsonData[1])
                     }
                 } catch (error) {
                     console.log(error)
                     reject(error)
                 }
             }
-
-        }).catch(error => reject(error))
+        })
+        .catch (error => reject(error))
     })
 }
 
-function GetZerionAssets(api_token: string, account: string) {
 
-        GetZerionMessage<AssetsMsg>(api_token, account, "address", "assets").then((data) => {
-            console.log(data)
-        })
- }
+export  async function GetTransactionList(address: string, limit: number, offset: number) {
 
+    return await GetTransactions(API_TOKEN, ACCOUNT, limit, offset)
 
-
-export  function getTransactionList() {
-
-    GetZerionAssets(API_TOKEN, ACCOUNT)
-   return []
 }
