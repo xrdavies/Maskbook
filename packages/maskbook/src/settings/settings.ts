@@ -65,10 +65,10 @@ export const currentWalletConnectChainIdSettings = createGlobalSettings<ChainId>
 )
 
 export const currentWalletConnectSourceSettings = createGlobalSettings<TransactionProvider>(
-    "walletConnct Source",
+    'walletConnct Source',
     TransactionProvider.ZERION,
     {
-        primary: () => "Wallet connect Source",
+        primary: () => 'Wallet connect Source',
         secondary: () => 'This is wallet connect source',
     },
 )
