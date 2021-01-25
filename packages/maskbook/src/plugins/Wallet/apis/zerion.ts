@@ -48,7 +48,13 @@ export interface TransactionMsg {
     }
 }
 
-const subscribe = (path: string, account: string, limit = 30, offset = 0) => {
+const subscribe = (
+    path: string,
+    account: string,
+    scope: string[],
+    limit: number | undefined = 30,
+    offset: number | undefined = 0,
+) => {
     const d = JSON.stringify([
         'subscribe',
         {
@@ -58,14 +64,15 @@ const subscribe = (path: string, account: string, limit = 30, offset = 0) => {
                 transactions_limit: limit,
                 transactions_offset: offset,
             },
-            scope: ['transactions'],
+            //scope: ['transactions'],
+            scope: scope,
         },
     ])
 
     return `${path},${d}`
 }
 
-const get = (path: string, account: string, limit: number, offset: number) => {
+const get = (path: string, account: string, limit: number | undefined, offset: number | undefined) => {
     const d = JSON.stringify([
         'get',
         {
@@ -108,7 +115,7 @@ const GetTransactions = (api_token: string, account: string, limit = 30, offset 
                     const params = new URLSearchParams()
                     params.append('api_token', api_token)
                     client.send(`40/address?${params.toString()}`)
-                    client.send(subscribe('42/address', account, limit, offset))
+                    client.send(subscribe('42/address', account, ['transactions'], limit, offset))
                 }
                 client.onmessage = (ev) => {
                     if (typeof ev.data !== 'string') {
@@ -132,6 +139,66 @@ const GetTransactions = (api_token: string, account: string, limit = 30, offset 
     })
 }
 
-export async function GetTransactionList(address: string, limit: number, offset: number) {
+export async function getTransactionList(address: string, limit: number, offset: number) {
     return await GetTransactions(API_TOKEN, address, limit, offset)
+}
+
+interface Asset {
+    asset_code: string
+    decimals: number
+    icon_url: string
+    is_displayable: boolean
+    name: string
+    price: { change_at: number; relative_change_24h: number; value: number } | null
+    symbol: string
+    type: string | null
+}
+
+export interface AssetsMsg {
+    meta: ZerionMeta
+    payload: {
+        assets: {
+            asset: Asset
+            quantity: string
+        }[]
+    }
+}
+
+function GetAssets(api_token: string, account: string) {
+    return new Promise<AssetsMsg>((resolve, reject) => {
+        const message_type = 'assets'
+        WebsocketClient(api_token)
+            .then((client) => {
+                const scope: string[] = []
+                scope.push(message_type)
+                client.onopen = () => {
+                    const params = new URLSearchParams()
+                    params.append('api_token', api_token)
+                    client.send(`40/assets?${params.toString()}`)
+                    client.send(subscribe('42/address', account, ['assets']))
+                }
+                client.onmessage = (ev) => {
+                    if (typeof ev.data !== 'string') {
+                        return
+                    }
+                    if (!ev.data.startsWith(`42/address`)) {
+                        return
+                    }
+                    try {
+                        const jsonData = JSON.parse(ev.data.slice(`42/address,`.length))
+                        if (jsonData[0] === `received address ${message_type}`) {
+                            resolve(jsonData[1])
+                        }
+                    } catch (error) {
+                        console.log(error)
+                        reject(error)
+                    }
+                }
+            })
+            .catch((error) => reject(error))
+    })
+}
+
+export async function getAssetsList(address: string) {
+    return await GetAssets(API_TOKEN, address)
 }

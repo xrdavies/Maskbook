@@ -11,7 +11,7 @@ import * as zerion from './zerion'
 
 export function getTransactionList(provider: TransactionProvider, address: string, limit = 30, offset = 0) {
     if (provider === TransactionProvider.ZERION) {
-        return zerion.GetTransactionList(address, limit, offset)
+        return zerion.getTransactionList(address, limit, offset)
     }
     if (provider === TransactionProvider.DEBANK) {
         return debank.getTransactionList(address)
