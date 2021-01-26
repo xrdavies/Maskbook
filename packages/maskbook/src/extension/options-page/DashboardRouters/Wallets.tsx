@@ -107,10 +107,6 @@ export default function DashboardWalletsRouter() {
     const tokens = useTrustedERC20TokensFromDB()
     const { value: detailedTokens, retry: retryDetailedTokens } = useAssetsDetailedCallback(tokens)
 
-    const a = useTransactions()
-    console.log('----a----')
-    console.log(a)
-
     // show create dialog
     useEffect(() => {
         if (create) openWalletCreate()
