@@ -25,6 +25,7 @@ import { WalletContent } from '../DashboardComponents/WalletContent'
 import { EthereumStatusBar } from '../../../web3/UI/EthereumStatusBar'
 import { extendsTheme } from '../../../utils/theme'
 import { useAssetsStableCoinDetailedDebank } from '../../../web3/hooks/useAssetsStableCoinDetailedDebank'
+import { usePriceStat } from '../../../plugins/Trader/trending/useCurrentPrice'
 
 //#region theme
 const walletsTheme = extendsTheme((theme) => ({
@@ -152,6 +153,10 @@ export default function DashboardWalletsRouter() {
         })
     //#endregion
 
+    console.log('------')
+    const a = usePriceStat(1)
+    console.log(a)
+    console.log('======')
     return (
         <DashboardWalletsContext.Provider value={{ detailedTokens, stableCoinTokens, retryDetailedTokens }}>
             <DashboardRouterContainer
