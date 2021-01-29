@@ -25,18 +25,7 @@ import { WalletContent } from '../DashboardComponents/WalletContent'
 import { EthereumStatusBar } from '../../../web3/UI/EthereumStatusBar'
 import { extendsTheme } from '../../../utils/theme'
 import { useAssetsStableCoinDetailedDebank } from '../../../web3/hooks/useAssetsStableCoinDetailedDebank'
-import { getPrice } from '../../../plugins/Trader/apis/coinmarketcap'
-import { subscribeCoinPrce } from '../../../plugins/Trader/apis/coinmarketcap/getPriceStat'
 
-subscribeCoinPrce(1)
-subscribeCoinPrce(825)
-
-try {
-    const price = getPrice(1)
-    console.log(price)
-} catch (e) {
-    console.log(e)
-}
 //#region theme
 const walletsTheme = extendsTheme((theme) => ({
     components: {
