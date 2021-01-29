@@ -59,7 +59,8 @@ export function resolveCoinId(keyword: string, dataProvider: DataProvider) {
     if (dataProvider === DataProvider.COIN_MARKET_CAP)
         return KEYWORK_ID_MAP[DataProvider.COIN_MARKET_CAP][keyword.toUpperCase()]
     if (dataProvider === DataProvider.COIN_GECKO) return KEYWORK_ID_MAP[DataProvider.COIN_GECKO][keyword.toUpperCase()]
-    if (dataProvider === DataProvider.UNISWAP_INFO) return KEYWORK_ID_MAP[DataProvider.UNISWAP_INFO][keyword.toUpperCase()]
+    if (dataProvider === DataProvider.UNISWAP_INFO)
+        return KEYWORK_ID_MAP[DataProvider.UNISWAP_INFO][keyword.toUpperCase()]
     unreachable(dataProvider)
 }
 
