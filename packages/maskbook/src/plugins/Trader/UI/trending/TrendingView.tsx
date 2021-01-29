@@ -75,7 +75,7 @@ export function TrendingView(props: TrendingViewProps) {
     const dataProvider = useCurrentDataProvider(dataProviders)
     //#endregion
 
-    const [tabIndex, setTabIndex] = useState(dataProvider !== DataProvider.UNISWAP ? 1 : 0)
+    const [tabIndex, setTabIndex] = useState(dataProvider !== DataProvider.UNISWAP_INFO ? 1 : 0)
 
     //#region multiple coins share the same symbol
     const { value: coins = [] } = useAvailableCoins(tagType, name, dataProvider)
@@ -153,7 +153,7 @@ export function TrendingView(props: TrendingViewProps) {
 
     const { coin, market, tickers } = trending
     const canSwap = trending.coin.eth_address || trending.coin.symbol.toLowerCase() === 'eth'
-    const swapTabIndex = dataProvider !== DataProvider.UNISWAP ? 3 : 1
+    const swapTabIndex = dataProvider !== DataProvider.UNISWAP_INFO ? 3 : 1
     const fromToken = chainId === ChainId.Mainnet && coin.is_mirrored ? UST : createEtherToken(chainId)
     const { decimals } = coinDetailed ?? trending.coin
     const toToken = trending.coin.eth_address
@@ -184,16 +184,16 @@ export function TrendingView(props: TrendingViewProps) {
                         },
                     }}>
                     <Tab className={classes.tab} label={t('plugin_trader_tab_market')} />
-                    {dataProvider !== DataProvider.UNISWAP ? (
+                    {dataProvider !== DataProvider.UNISWAP_INFO ? (
                         <Tab className={classes.tab} label={t('plugin_trader_tab_price')} />
                     ) : null}
-                    {dataProvider !== DataProvider.UNISWAP ? (
+                    {dataProvider !== DataProvider.UNISWAP_INFO ? (
                         <Tab className={classes.tab} label={t('plugin_trader_tab_exchange')} />
                     ) : null}
                     {canSwap ? <Tab className={classes.tab} label={t('plugin_trader_tab_swap')} /> : null}
                 </Tabs>
                 {tabIndex === 0 ? <CoinMarketPanel dataProvider={dataProvider} trending={trending} /> : null}
-                {tabIndex === 1 && dataProvider !== DataProvider.UNISWAP ? (
+                {tabIndex === 1 && dataProvider !== DataProvider.UNISWAP_INFO ? (
                     <>
                         {market ? <PriceChangedTable market={market} /> : null}
                         <PriceChart
@@ -205,7 +205,7 @@ export function TrendingView(props: TrendingViewProps) {
                         </PriceChart>
                     </>
                 ) : null}
-                {tabIndex === 2 && dataProvider !== DataProvider.UNISWAP ? (
+                {tabIndex === 2 && dataProvider !== DataProvider.UNISWAP_INFO ? (
                     <TickersTable tickers={tickers} dataProvider={dataProvider} />
                 ) : null}
                 {tabIndex === swapTabIndex && canSwap ? (
