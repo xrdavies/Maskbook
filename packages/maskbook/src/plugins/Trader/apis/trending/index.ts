@@ -7,7 +7,7 @@ import { Days } from '../../UI/trending/PriceChartDaysControl'
 import { getEnumAsArray } from '../../../../utils/enum'
 import { BTC_FIRST_LEGER_DATE, CRYPTOCURRENCY_MAP_EXPIRES_AT } from '../../constants'
 import { resolveCoinId, resolveCoinAddress, resolveAlias } from './hotfix'
-import MIRRORED_KEYWORDS from './mirrored.json'
+import MIRRORED_TOKENS from './mirrored_tokens.json'
 import STOCKS_KEYWORDS from './stocks.json'
 import CASHTAG_KEYWORDS from './cashtag.json'
 import HASHTAG_KEYWORDS from './hashtag.json'
@@ -75,27 +75,31 @@ export async function getLimitedCurrenies(dataProvider: DataProvider): Promise<C
                     description: 'Unite State Dollar',
                 },
             ]
+        default:
+            unreachable(dataProvider)
     }
 }
 
 export async function getCoins(dataProvider: DataProvider): Promise<Coin[]> {
-    if (dataProvider === DataProvider.COIN_GECKO) return coinGeckoAPI.getAllCoins()
-
-    // for cmc we should filter inactivated coins out
-    if (dataProvider === DataProvider.COIN_MARKET_CAP)
-        return (await coinMarketCapAPI.getAllCoins()).data
-            .filter((x) => x.status === 'active')
-            .map((y) => ({
-                id: String(y.id),
-                name: y.name,
-                symbol: y.symbol,
-                eth_address: y.platform?.name === 'Ethereum' ? y.platform.token_address : undefined,
-            }))
-
-    // the uniswap has got huge tokens based (more than 2.2k) since we should fetch coins info dynamically
-    if (dataProvider === DataProvider.UNISWAP_INFO) return []
-
-    return []
+    switch (dataProvider) {
+        case DataProvider.COIN_GECKO:
+            return coinGeckoAPI.getAllCoins()
+        case DataProvider.COIN_MARKET_CAP:
+            // for cmc we should filter inactivated coins out
+            return (await coinMarketCapAPI.getAllCoins()).data
+                .filter((x) => x.status === 'active')
+                .map((y) => ({
+                    id: String(y.id),
+                    name: y.name,
+                    symbol: y.symbol,
+                    eth_address: y.platform?.name === 'Ethereum' ? y.platform.token_address : undefined,
+                }))
+        case DataProvider.UNISWAP_INFO:
+            // the uniswap has got huge tokens based (more than 2.2k) since we should fetch coins info dynamically
+            return []
+        default:
+            unreachable(dataProvider)
+    }
 }
 
 //#region check a specific coin is available on specific data provider
@@ -157,7 +161,7 @@ function isBlockedKeyword(type: TagType, keyword: string) {
 }
 
 function isMirroredKeyword(symbol: string) {
-    return MIRRORED_KEYWORDS.some((x) => x.toUpperCase() === symbol.toUpperCase())
+    return MIRRORED_TOKENS.map((x) => x.symbol).some((x) => x.toUpperCase() === symbol.toUpperCase())
 }
 
 export async function checkAvailabilityOnDataProvider(keyword: string, type: TagType, dataProvider: DataProvider) {
@@ -371,11 +375,14 @@ export async function getCoinTrendingByKeyword(
     currency: Currency,
     dataProvider: DataProvider,
 ) {
+    // check if the keyword is supported by given data provider
     const coins = await getAvailableCoins(keyword, tagType, dataProvider)
     if (!coins.length) return null
+
     // prefer coins on the etherenum network
     const coin = coins.find((x) => x.eth_address) ?? first(coins)
     if (!coin) return null
+
     return getCoinTrendingById(
         resolveCoinId(resolveAlias(keyword, dataProvider), dataProvider) ?? coin.id,
         currency,
