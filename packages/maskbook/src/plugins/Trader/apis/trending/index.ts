@@ -95,7 +95,7 @@ export async function getCoins(dataProvider: DataProvider): Promise<Coin[]> {
                     eth_address: y.platform?.name === 'Ethereum' ? y.platform.token_address : undefined,
                 }))
         case DataProvider.UNISWAP_INFO:
-            // the uniswap has got huge tokens based (more than 2.2k) since we should fetch coins info dynamically
+            // the uniswap has got huge tokens based (more than 2.2k) since we fetch coin info dynamically
             return []
         default:
             unreachable(dataProvider)
@@ -128,7 +128,7 @@ async function updateCache(dataProvider: DataProvider, keyword?: string) {
                 })
             const cache = coinNamespace.get(dataProvider)!
             cache.supportedSymbolsSet.add(keyword.toLowerCase())
-            cache.supportedSymbolIdsMap.set(keyword, await uniswapAPI.getAllCoinsByKeyword(keyword))
+            cache.supportedSymbolIdsMap.set(keyword.toLowerCase(), await uniswapAPI.getAllCoinsByKeyword(keyword))
             cache.lastUpdated = new Date()
             return
         }
@@ -423,7 +423,7 @@ export async function getPriceStats(
             if (stats.data.is_active === 0) return []
             return Object.entries(stats.data).map(([date, x]) => [date, x[currency.name.toUpperCase()][0]])
         case DataProvider.UNISWAP_INFO:
-            return uniswapAPI.getPriceStats(id, currency.id)
+            return uniswapAPI.getPriceStats(id, currency)
         default:
             return []
     }
