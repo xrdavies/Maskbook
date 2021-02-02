@@ -27,4 +27,11 @@ export const TRENDING_CONSTANTS = {
         [ChainId.Kovan]: '',
         [ChainId.Gorli]: '',
     },
+    ETHEREUM_BLOCKS_SUBGRAPH_URL: {
+        [ChainId.Mainnet]: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
+        [ChainId.Ropsten]: '',
+        [ChainId.Rinkeby]: '',
+        [ChainId.Kovan]: '',
+        [ChainId.Gorli]: '',
+    },
 }
