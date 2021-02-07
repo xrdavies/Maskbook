@@ -1,4 +1,4 @@
-import { story } from '@dimensiondev/maskbook-theme/dist/stories/utils/story'
+import { story } from '@dimensiondev/maskbook-theme/stories/utils'
 import { ConnectWalletDialog as C } from '../src/components/ConnectWalletDialog'
 const { meta, of } = story(C)
 

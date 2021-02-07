@@ -1,6 +1,7 @@
 import { experimentalStyled as styled, Tabs, Tab } from '@material-ui/core'
+import { ButtonGroupTabList } from '@dimensiondev/maskbook-theme/src/Components/ButtonGroupTab'
 import React, { useState } from 'react'
-import { RefreshIcon } from './icons'
+import { TabContext } from '@material-ui/lab'
 
 const Container = styled('div')`
     display: flex;
@@ -22,22 +23,20 @@ const Refresh = styled('div')`
     cursor: pointer;
 `
 
+const walletTabs = ['Mnemonic', 'JSON File', 'Private Key']
+
 export function CreateWallet() {
-    const [activeTab, setActiveTab] = useState(0)
+    const [activeTab, setActiveTab] = useState(walletTabs[0])
 
     return (
         <Container>
-            <Tabs
-                value={activeTab}
-                onChange={(event: React.SyntheticEvent, newValue: number) => setActiveTab(newValue)}>
-                <Tab label="Mnemonic" />
-                <Tab label="JSON File" />
-                <Tab label="Private Key" />
-            </Tabs>
-            <Refresh>
-                <RefreshIcon />
-                <span>Refresh</span>
-            </Refresh>
+            <TabContext value={walletTabs.includes(activeTab) ? activeTab : walletTabs[0]}>
+                <ButtonGroupTabList onChange={(e, v) => setActiveTab(v)} aria-label="Create Wallet Tabs">
+                    {walletTabs.map((x) => (
+                        <Tab key={x} value={x} label={x} />
+                    ))}
+                </ButtonGroupTabList>
+            </TabContext>
         </Container>
     )
 }
