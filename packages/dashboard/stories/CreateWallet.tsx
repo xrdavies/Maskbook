@@ -1,4 +1,4 @@
-import { story } from '@dimensiondev/maskbook-theme/stories/utils'
+import { story } from '@dimensiondev/maskbook-storybook-shared'
 import { CreateWallet as C } from '../src/pages/Wallets/CreateWallet'
 const { meta, of } = story(C)
 
