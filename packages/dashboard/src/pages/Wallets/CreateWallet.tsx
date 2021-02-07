@@ -3,7 +3,7 @@ import { ButtonGroupTabList } from '@dimensiondev/maskbook-theme/src/Components/
 import React, { useState } from 'react'
 import { TabContext, TabPanel } from '@material-ui/lab'
 import { RefreshIcon } from './icons'
-import { MnemonicGenerator } from '../../components/Mnemonic'
+import { MnemonicReveal } from '../../components/Mnemonic'
 import { Close as CloseIcon } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -95,7 +95,7 @@ export function CreateWallet() {
                             <span>Refresh</span>
                         </Refresh>
                         <MnemonicGeneratorContainer>
-                            <MnemonicGenerator dataSource={[...Array(12).keys()].map((i) => String(i))} />
+                            <MnemonicReveal words={[...Array(12).keys()].map((i) => String(i))} />
                         </MnemonicGeneratorContainer>
                     </TabPanel>
                 </TabContext>

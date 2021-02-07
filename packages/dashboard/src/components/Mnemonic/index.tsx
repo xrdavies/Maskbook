@@ -1,2 +1,2 @@
 export * from './MnemonicConfirm'
-export * from './MnemonicGenerator'
+export * from './MnemonicReveal'
