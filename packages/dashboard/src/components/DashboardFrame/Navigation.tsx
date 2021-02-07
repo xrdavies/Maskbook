@@ -16,7 +16,7 @@ import { useRouteMatch } from 'react-router'
 import { Link, LinkProps } from 'react-router-dom'
 import { Routes } from '../../pages/routes'
 import { DashboardContext } from './context'
-import Logo from './Logo'
+import { MaskbookIcon } from '../../icons'
 
 function ListItemLinkUnStyled({ nested, ...props }: LinkProps & ListItemProps & { nested?: boolean; to: string }) {
     return <MuiListItem button component={Link} selected={!!useRouteMatch(props.to)} {...props} />
@@ -57,7 +57,7 @@ export function Navigation({}: NavigationProps) {
         <List>
             {isLargeScreen && (
                 <LogoItem>
-                    <Logo height={40} />
+                    <MaskbookIcon />
                 </LogoItem>
             )}
             <ListItemLink to={Routes.Personas}>

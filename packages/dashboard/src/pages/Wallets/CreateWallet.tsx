@@ -8,7 +8,7 @@ import {
     IconButton,
     Tab,
 } from '@material-ui/core'
-import { ButtonGroupTabList } from '@dimensiondev/maskbook-theme/src/Components/ButtonGroupTab'
+import { ButtonGroupTabList } from '@dimensiondev/maskbook-theme'
 import React, { useState } from 'react'
 import { TabContext, TabPanel } from '@material-ui/lab'
 import { RefreshIcon } from './icons'
