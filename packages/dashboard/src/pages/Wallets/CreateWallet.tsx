@@ -1,23 +1,37 @@
-import { experimentalStyled as styled, Tab } from '@material-ui/core'
+import { Alert, Button, Collapse, experimentalStyled as styled, IconButton, Tab } from '@material-ui/core'
 import { ButtonGroupTabList } from '@dimensiondev/maskbook-theme/src/Components/ButtonGroupTab'
 import React, { useState } from 'react'
-import { TabContext } from '@material-ui/lab'
+import { TabContext, TabPanel } from '@material-ui/lab'
 import { RefreshIcon } from './icons'
 import { MnemonicGenerator } from '../../components/Mnemonic'
+import { Close as CloseIcon } from '@material-ui/icons'
+import { makeStyles } from '@material-ui/core/styles'
 
 const Container = styled('div')`
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 584px;
 `
+
+const ButtonGroupTabContainer = styled('div')`
+    width: 582px;
+`
+
+// const TabPanel = styled(MuiTabPanel)`
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     &.MuiTabPanel-root {
+//         padding: 0;
+//     }
+// `
 
 const Refresh = styled('div')`
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    width: 100%;
+    width: 584px;
     margin: 16px 0;
     font-size: 14px;
     line-height: 20px;
@@ -31,27 +45,87 @@ const MnemonicGeneratorContainer = styled('div')`
     border-radius: 8px;
 `
 
+const ControlContainer = styled('div')`
+    margin-top: 50px;
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    width: 584px;
+`
+
+const AlertContainer = styled('div')`
+    width: 676px;
+    margin-top: 59px;
+    color: #afc3e1;
+`
+
+const useTabPanelStyles = makeStyles(() => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: 0,
+    },
+}))
+
 const walletTabs = ['Mnemonic', 'JSON File', 'Private Key']
 
 export function CreateWallet() {
+    const tabClasses = useTabPanelStyles()
     const [activeTab, setActiveTab] = useState(walletTabs[0])
-
+    const [openAlert, setOpenAlert] = useState(true)
     return (
-        <Container>
-            <TabContext value={walletTabs.includes(activeTab) ? activeTab : walletTabs[0]}>
-                <ButtonGroupTabList onChange={(e, v) => setActiveTab(v)} aria-label="Create Wallet Tabs" fullWidth>
-                    {walletTabs.map((x) => (
-                        <Tab key={x} value={x} label={x} />
-                    ))}
-                </ButtonGroupTabList>
-            </TabContext>
-            <Refresh>
-                <RefreshIcon />
-                <span>Refresh</span>
-            </Refresh>
-            <MnemonicGeneratorContainer>
-                <MnemonicGenerator dataSource={[...Array(12).keys()].map((i) => String(i))} />
-            </MnemonicGeneratorContainer>
-        </Container>
+        <>
+            <Container>
+                <TabContext value={walletTabs.includes(activeTab) ? activeTab : walletTabs[0]}>
+                    <ButtonGroupTabContainer>
+                        <ButtonGroupTabList
+                            onChange={(e, v) => setActiveTab(v)}
+                            aria-label="Create Wallet Tabs"
+                            fullWidth>
+                            {walletTabs.map((x) => (
+                                <Tab key={x} value={x} label={x} />
+                            ))}
+                        </ButtonGroupTabList>
+                    </ButtonGroupTabContainer>
+                    <TabPanel key="Mnemonic" value="Mnemonic" classes={tabClasses}>
+                        <Refresh>
+                            <RefreshIcon />
+                            <span>Refresh</span>
+                        </Refresh>
+                        <MnemonicGeneratorContainer>
+                            <MnemonicGenerator dataSource={[...Array(12).keys()].map((i) => String(i))} />
+                        </MnemonicGeneratorContainer>
+                    </TabPanel>
+                </TabContext>
+
+                <ControlContainer>
+                    <Button color="secondary">Remember that later</Button>
+                    <Button color="primary">Verification</Button>
+                </ControlContainer>
+                <AlertContainer>
+                    <Collapse in={openAlert}>
+                        <Alert
+                            severity="info"
+                            action={
+                                <IconButton
+                                    aria-label="close"
+                                    color="inherit"
+                                    size="small"
+                                    onClick={() => setOpenAlert(false)}>
+                                    <CloseIcon fontSize="inherit" />
+                                </IconButton>
+                            }>
+                            Mask Network is a free, open-source, client-side interface. Mask Network allows you to
+                            interact directly with the blockchain, while you remain in full control of your keys and
+                            funds.Please think about this carefully. YOU are the one who is in control. Mask Network is
+                            not a bank or exchange. We don't hold your keys, your funds, or your information. This means
+                            we can't access accounts, recover keys, reset passwords, or reverse transactions.
+                        </Alert>
+                    </Collapse>
+                </AlertContainer>
+            </Container>
+        </>
     )
 }
