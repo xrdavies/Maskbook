@@ -10,17 +10,19 @@ const Container = styled('div')`
     }
 `
 
-const WordCard = styled(Typography)`
+const WordCard = styled(Typography)(
+    ({ theme }) => `
     border-radius: 6px;
     /* TODO: No hardcoded colors */
     color: #1c68f3;
     font-size: 12px;
     /* TODO: No hardcoded colors */
-    background-color: #fff;
+    background-color: ${theme.palette.background.paper};
     display: flex;
     justify-content: center;
     align-items: center;
-`
+`,
+)
 
 export interface MnemonicRevealProps {
     words: string[]

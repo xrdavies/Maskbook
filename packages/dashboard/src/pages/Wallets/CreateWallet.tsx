@@ -1,4 +1,13 @@
-import { Alert, Button, Collapse, experimentalStyled as styled, IconButton, Tab } from '@material-ui/core'
+import {
+    Alert,
+    Button,
+    Collapse,
+    createStyles,
+    experimentalStyled as styled,
+    FilledInput,
+    IconButton,
+    Tab,
+} from '@material-ui/core'
 import { ButtonGroupTabList } from '@dimensiondev/maskbook-theme/src/Components/ButtonGroupTab'
 import React, { useState } from 'react'
 import { TabContext, TabPanel } from '@material-ui/lab'
@@ -17,15 +26,6 @@ const Container = styled('div')`
 const ButtonGroupTabContainer = styled('div')`
     width: 582px;
 `
-
-// const TabPanel = styled(MuiTabPanel)`
-//     display: flex;
-//     flex-direction: column;
-//     align-items: center;
-//     &.MuiTabPanel-root {
-//         padding: 0;
-//     }
-// `
 
 const Refresh = styled('div')`
     display: flex;
@@ -60,19 +60,32 @@ const AlertContainer = styled('div')`
     color: #afc3e1;
 `
 
-const useTabPanelStyles = makeStyles(() => ({
-    root: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: 0,
-    },
-}))
+const useTabPanelStyles = makeStyles(() =>
+    createStyles({
+        root: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: 0,
+        },
+    }),
+)
+
+const usePrivateKeyTextStyles = makeStyles(() =>
+    createStyles({
+        root: {
+            width: 582,
+            height: 182,
+            marginTop: 25,
+        },
+    }),
+)
 
 const walletTabs = ['Mnemonic', 'JSON File', 'Private Key']
 
 export function CreateWallet() {
     const tabClasses = useTabPanelStyles()
+    const privateKeyTextClasses = usePrivateKeyTextStyles()
     const [activeTab, setActiveTab] = useState(walletTabs[0])
     const [openAlert, setOpenAlert] = useState(true)
     return (
@@ -97,6 +110,10 @@ export function CreateWallet() {
                         <MnemonicGeneratorContainer>
                             <MnemonicReveal words={[...Array(12).keys()].map((i) => String(i))} />
                         </MnemonicGeneratorContainer>
+                    </TabPanel>
+                    <TabPanel key="Private Key" value="Private Key" classes={tabClasses}>
+                        {/* Private Key Input need be a component */}
+                        <FilledInput classes={privateKeyTextClasses} />
                     </TabPanel>
                 </TabContext>
 
