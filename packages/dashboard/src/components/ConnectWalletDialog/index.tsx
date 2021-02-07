@@ -1,6 +1,6 @@
-import { ConnectActionList, ConnectActionListItem } from '../ConnectActionList'
-import { MetaMaskIcon, PolkaDotIcon, WalletIcon } from '../ConnectActionList/icons'
 import { memo } from 'react'
+import { ConnectActionList, ConnectActionListItem } from '../ConnectActionList'
+import { PolkaDotIcon, WalletConnectIcon, MetaMaskIcon } from '../../icons'
 
 export enum ConnectWalletTargets {
     MetaMask,
@@ -15,17 +15,17 @@ export const ConnectWalletList = memo(({ onConnect }: ConnectWalletListProps) =>
         <ConnectActionList>
             <ConnectActionListItem
                 title="MetaMask"
-                icon={<MetaMaskIcon />}
+                icon={<MetaMaskIcon fontSize="inherit" />}
                 onClick={() => onConnect(ConnectWalletTargets.MetaMask)}
             />
             <ConnectActionListItem
                 title="Connect Wallet"
-                icon={<WalletIcon />}
+                icon={<WalletConnectIcon fontSize="inherit" />}
                 onClick={() => onConnect(ConnectWalletTargets.Connect)}
             />
             <ConnectActionListItem
                 title="PolkaDot Wallet"
-                icon={<PolkaDotIcon />}
+                icon={<PolkaDotIcon fontSize="inherit" />}
                 onClick={() => onConnect(ConnectWalletTargets.PolkaDot)}
             />
         </ConnectActionList>
