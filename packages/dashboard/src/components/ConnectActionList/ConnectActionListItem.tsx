@@ -28,12 +28,14 @@ const Container = styled(ListItem)`
     border-radius: 8px;
 `
 
-const Dot = styled('div')`
+const Dot = styled('div')(
+    ({ theme }) => `
     width: 10px;
     height: 10px;
     border-radius: 50%;
     /* TODO: avoid hardcoded color */
     background-color: #a6a9b6;
     /* TODO: avoid hardcoded spacing */
-    margin-right: 16px;
-`
+    margin-right: ${theme.spacing(2)};
+`,
+)
