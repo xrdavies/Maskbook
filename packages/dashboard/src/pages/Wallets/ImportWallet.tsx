@@ -1,10 +1,8 @@
-import { Button, createStyles, experimentalStyled as styled, FilledInput, Tab } from '@material-ui/core'
-import { ButtonGroupTabList } from '@dimensiondev/maskbook-theme'
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 import { TabContext, TabPanel } from '@material-ui/lab'
-import { RefreshIcon } from './icons'
-import { MnemonicReveal } from '../../components/Mnemonic'
-import { makeStyles } from '@material-ui/core/styles'
+import { Button, createStyles, Tab, experimentalStyled as styled, makeStyles, FilledInput } from '@material-ui/core'
+import { ButtonGroupTabList } from '@dimensiondev/maskbook-theme'
+import { MnemonicConfirm } from '../../components/Mnemonic'
 import { MaskAlert } from '../../components/MaskAlert'
 
 const Container = styled('div')`
@@ -16,24 +14,6 @@ const Container = styled('div')`
 
 const ButtonGroupTabContainer = styled('div')`
     width: 582px;
-`
-
-const Refresh = styled('div')`
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    width: 584px;
-    margin: 16px 0;
-    font-size: 14px;
-    line-height: 20px;
-    color: #1c68f3;
-    cursor: pointer;
-`
-
-const MnemonicGeneratorContainer = styled('div')`
-    padding: 30px 41px;
-    background-color: #f9fafa;
-    border-radius: 8px;
 `
 
 const ControlContainer = styled('div')`
@@ -50,28 +30,37 @@ const AlertContainer = styled('div')`
     margin-top: 59px;
     color: #afc3e1;
 `
+
 const PrivateKeyInput = styled(FilledInput)`
     width: 582px;
     height: 182px;
     margin-top: 25px;
 `
 
-const useTabPanelStyles = makeStyles(() =>
+const PasswordInput = styled(FilledInput)`
+    width: 582px;
+    margin-top: 25px;
+`
+
+const useTabPanelStyles = makeStyles((theme) =>
     createStyles({
         root: {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             padding: 0,
+            marginTop: theme.spacing(3),
+            width: 582,
         },
     }),
 )
 
 const walletTabs = ['Mnemonic', 'JSON File', 'Private Key']
 
-export function CreateWallet() {
+export const ImportWallet = memo(() => {
     const tabClasses = useTabPanelStyles()
     const [activeTab, setActiveTab] = useState(walletTabs[0])
+
     return (
         <>
             <Container>
@@ -86,23 +75,17 @@ export function CreateWallet() {
                             ))}
                         </ButtonGroupTabList>
                     </ButtonGroupTabContainer>
-                    <TabPanel key="Mnemonic" value="Mnemonic" classes={tabClasses}>
-                        <Refresh>
-                            <RefreshIcon />
-                            <span>Refresh</span>
-                        </Refresh>
-                        <MnemonicGeneratorContainer>
-                            <MnemonicReveal words={[...Array(12).keys()].map((i) => String(i))} />
-                        </MnemonicGeneratorContainer>
+                    <TabPanel value="Mnemonic" key="Mnemonic" classes={tabClasses}>
+                        <MnemonicConfirm onChange={() => {}} />
                     </TabPanel>
-                    <TabPanel key="Private Key" value="Private Key" classes={tabClasses}>
+                    <TabPanel value="Private Key" key="Private Key" classes={tabClasses}>
                         <PrivateKeyInput />
+                        <PasswordInput placeholder="Wallet Password" />
                     </TabPanel>
                 </TabContext>
-
                 <ControlContainer>
-                    <Button color="secondary">Remember that later</Button>
-                    <Button color="primary">Verification</Button>
+                    <Button color="secondary">Cancel</Button>
+                    <Button color="primary">Import</Button>
                 </ControlContainer>
                 <AlertContainer>
                     <MaskAlert />
@@ -110,4 +93,4 @@ export function CreateWallet() {
             </Container>
         </>
     )
-}
+})
