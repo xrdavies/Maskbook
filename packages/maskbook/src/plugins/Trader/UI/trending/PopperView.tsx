@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => {
     })
 })
 
-export interface TrendingViewProps {
+export interface PopperViewProps {
     name: string
     tagType: TagType
     dataProviders: DataProvider[]
@@ -62,7 +62,7 @@ export interface TrendingViewProps {
     onUpdate?: () => void
 }
 
-export function TrendingView(props: TrendingViewProps) {
+export function PopperView(props: PopperViewProps) {
     const { name, tagType, dataProviders, tradeProviders } = props
 
     const { t } = useI18N()
@@ -118,7 +118,7 @@ export function TrendingView(props: TrendingViewProps) {
     }, [tabIndex, loadingTrending])
     //#endregion
 
-    //#region no available platform
+    //#region no available providers
     if (dataProviders.length === 0) return null
     //#endregion
 

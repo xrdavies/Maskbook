@@ -43,6 +43,7 @@ export const Flags = {
     COTM_enabled: webOnly,
     COTM_composition_dialog_enabled: false,
     mask_ito_enabled: betaOrInsiderOnly,
+    LBP_enabled: webOnly,
     metamask_support_enabled: webOnly,
     //#endregion
 

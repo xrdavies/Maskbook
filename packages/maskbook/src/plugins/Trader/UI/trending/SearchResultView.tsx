@@ -79,6 +79,7 @@ export function SearchResultView(props: SearchResultViewProps) {
     //#endregion
 
     const [tabIndex, setTabIndex] = useState(dataProvider !== DataProvider.UNISWAP ? 1 : 0)
+
     //#region multiple coins share the same symbol
     const { value: coins = [] } = useAvailableCoins(tagType, name, dataProvider)
     //#endregion
