@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { useAsyncRetry, useTimeoutFn } from 'react-use'
+import { useTimeoutFn } from 'react-use'
 import { makeStyles, createStyles } from '@material-ui/core'
 import type { Trade } from '@uniswap/sdk'
 import { v4 as uuid } from 'uuid'
 
 import { useStylesExtends } from '../../../../components/custom-ui-helper'
-import { ERC20TokenDetailed, EthereumTokenType, EtherTokenDetailed } from '../../../../web3/types'
+import { ERC20TokenDetailed, EthereumTokenType, EtherTokenDetailed, ChainId } from '../../../../web3/types'
 import { TradeForm } from './TradeForm'
 import { TradeRoute } from '../uniswap/TradeRoute'
 import { TradeSummary } from '../trader/TradeSummary'
@@ -13,7 +13,7 @@ import { ConfirmDialog } from './ConfirmDialog'
 import { useERC20TokenApproveCallback, ApproveState } from '../../../../web3/hooks/useERC20TokenApproveCallback'
 import { useTradeApproveComputed } from '../../trader/useTradeApproveComputed'
 import { TradeActionType } from '../../trader/useTradeState'
-import { TokenPanelType, TradeComputed, TradeProvider } from '../../types'
+import { TokenPanelType, TradeComputed, TradeProvider, Coin } from '../../types'
 import { TRADE_CONSTANTS } from '../../constants'
 import { sleep } from '../../../../utils/utils'
 import { TransactionStateType } from '../../../../web3/hooks/useTransactionState'
@@ -28,10 +28,11 @@ import { useTradeStateComputed } from '../../trader/useTradeStateComputed'
 import { useTokenBalance } from '../../../../web3/hooks/useTokenBalance'
 import { getActivatedUI } from '../../../../social-network/ui'
 import { EthereumMessages } from '../../../Ethereum/messages'
-import { SelectTokenDialog } from '../../../Ethereum/UI/SelectTokenDialog'
-import { EthereumBlockNumber } from '../../../../web3/UI/EthereumBlockNumber'
 import Services from '../../../../extension/service'
+import { UST } from '../../constants'
 import { SelectTokenDialogEvent, WalletMessages } from '../../../Wallet/messages'
+import { useChainId } from '../../../../web3/hooks/useChainState'
+import { createERC20Token, createEtherToken } from '../../../../web3/helpers'
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -54,12 +55,14 @@ const useStyles = makeStyles((theme) => {
 })
 
 export interface TraderProps extends withClasses<KeysInferFromUseStyles<typeof useStyles>> {
-    fromToken: EtherTokenDetailed | ERC20TokenDetailed
-    toToken?: EtherTokenDetailed | ERC20TokenDetailed
+    coin: Coin
+    coinDetailed: ERC20TokenDetailed | EtherTokenDetailed | undefined
 }
 
 export function Trader(props: TraderProps) {
-    const { fromToken, toToken } = props
+    const { coin, coinDetailed } = props
+    const { decimals } = coinDetailed ?? coin
+    const chainId = useChainId()
     const classes = useStylesExtends(useStyles(), props)
 
     const provider = useValueRef(currentTradeProviderSettings)
@@ -74,13 +77,15 @@ export function Trader(props: TraderProps) {
     useEffect(() => {
         dispatchTradeStore({
             type: TradeActionType.UPDATE_INPUT_TOKEN,
-            token: fromToken,
+            token: chainId === ChainId.Mainnet && coin.is_mirrored ? UST : createEtherToken(chainId),
         })
         dispatchTradeStore({
             type: TradeActionType.UPDATE_OUTPUT_TOKEN,
-            token: toToken,
+            token: coin.eth_address
+                ? createERC20Token(chainId, coin.eth_address!, decimals ?? 0, coin.name ?? '', coin.symbol ?? '')
+                : undefined,
         })
-    }, [fromToken, toToken])
+    }, [coin, chainId, decimals])
     //#endregion
 
     //#region switch tokens
@@ -186,23 +191,6 @@ export function Trader(props: TraderProps) {
     )
     //#endregion
 
-    //#region approve
-    const { approveToken, approveAmount, approveAddress } = useTradeApproveComputed(trade, provider, inputToken)
-    const [approveState, , approveCallback] = useERC20TokenApproveCallback(
-        approveToken?.address ?? '',
-        approveAmount,
-        approveAddress,
-    )
-    const onApprove = useCallback(async () => {
-        if (approveState !== ApproveState.NOT_APPROVED) return
-        await approveCallback()
-    }, [approveState, approveCallback])
-    const onExactApprove = useCallback(async () => {
-        if (approveState !== ApproveState.NOT_APPROVED) return
-        await approveCallback(true)
-    }, [approveState, approveCallback])
-    //#endregion
-
     //#region blocking (swap)
     const [tradeState, tradeCallback, resetTradeCallback] = useTradeCallback(provider, trade)
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false)
@@ -223,11 +211,10 @@ export function Trader(props: TraderProps) {
     }, 30 /* seconds */ * 1000 /* milliseconds */)
 
     const onRefreshClick = useCallback(async () => {
-        if (approveState === ApproveState.PENDING) return
         await Services.Ethereum.updateChainState()
         asyncTradeComputed.retry()
         resetTimeout()
-    }, [approveState, asyncTradeComputed.retry, resetTimeout])
+    }, [asyncTradeComputed.retry, resetTimeout])
     //#endregion
 
     //#region remote controlled transaction dialog
@@ -285,8 +272,8 @@ export function Trader(props: TraderProps) {
     return (
         <div className={classes.root}>
             <TradeForm
-                approveState={approveState}
                 trade={trade}
+                provider={provider}
                 strategy={strategy}
                 loading={asyncTradeComputed.loading}
                 inputToken={inputToken}
@@ -300,8 +287,6 @@ export function Trader(props: TraderProps) {
                 onReverseClick={onReverseClick}
                 onRefreshClick={onRefreshClick}
                 onTokenChipClick={onTokenChipClick}
-                onApprove={onApprove}
-                onExactApprove={onExactApprove}
                 onSwap={() => setOpenConfirmDialog(true)}
             />
             {trade && inputToken && outputToken ? (
@@ -332,7 +317,6 @@ export function Trader(props: TraderProps) {
                     ) : null}
                 </>
             ) : null}
-            <EthereumBlockNumber />
         </div>
     )
 }
