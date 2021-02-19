@@ -22,6 +22,7 @@ export function TagInspector(props: TagInspectorProps) {
                         TradeProvider.SUSHISWAP,
                         TradeProvider.ZRX,
                         TradeProvider.SASHIMISWAP,
+                        TradeProvider.BALANCER,
                     ]}
                     onUpdate={reposition}
                 />

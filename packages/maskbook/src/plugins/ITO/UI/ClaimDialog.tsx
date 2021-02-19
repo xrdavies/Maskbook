@@ -10,7 +10,7 @@ import { TransactionStateType } from '../../../web3/hooks/useTransactionState'
 import { SelectTokenDialogEvent, WalletMessages, WalletRPC } from '../../Wallet/messages'
 import { TokenAmountPanel } from '../../../web3/UI/TokenAmountPanel'
 import { useTokenBalance } from '../../../web3/hooks/useTokenBalance'
-import { useClaimCallback } from '../hooks/useClaimCallback'
+import { useSwapCallback } from '../hooks/useSwapCallback'
 import { useStylesExtends } from '../../../components/custom-ui-helper'
 import { useI18N } from '../../../utils/i18n-next-ui'
 import { formatBalance } from '../../../plugins/Wallet/formatter'
@@ -18,7 +18,6 @@ import { useConstant } from '../../../web3/hooks/useConstant'
 import type { ChainId } from '../../../web3/types'
 import type { JSON_PayloadInMask } from '../types'
 import { ITO_CONSTANTS } from '../constants'
-import { EthereumStatusBar } from '../../../web3/UI/EthereumStatusBar'
 import { ClaimStatus } from './ClaimGuide'
 import { isETH, isSameAddress } from '../../../web3/helpers'
 import { EthereumMessages } from '../../Ethereum/messages'
@@ -28,11 +27,6 @@ import { EthereumWalletConnectedBoundary } from '../../../web3/UI/EthereumWallet
 const useStyles = makeStyles((theme) =>
     createStyles({
         button: {},
-        providerWrapper: {
-            display: 'flex',
-            flexDirection: 'row-reverse',
-            alignItems: 'center',
-        },
         providerBar: {},
         swapLimitWrap: {
             display: 'flex',
@@ -186,7 +180,7 @@ export function ClaimDialog(props: ClaimDialogProps) {
     //#endregion
 
     //#region claim
-    const [claimState, claimCallback, resetClaimCallback] = useClaimCallback(
+    const [claimState, claimCallback, resetClaimCallback] = useSwapCallback(
         payload.pid,
         payload.password,
         claimAmount.toFixed(),
@@ -234,9 +228,6 @@ export function ClaimDialog(props: ClaimDialogProps) {
 
     return (
         <>
-            <section className={classes.providerWrapper}>
-                <EthereumStatusBar classes={{ root: classes.providerBar }} />
-            </section>
             <section className={classes.swapLimitWrap}>
                 <Typography variant="body1" className={classes.swapLimitText}>
                     0 {token.symbol}

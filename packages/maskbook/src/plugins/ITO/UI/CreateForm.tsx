@@ -1,12 +1,11 @@
-import { createStyles, makeStyles, Box, TextField, Grid } from '@material-ui/core'
-import React, { useState, useCallback, useMemo, useEffect, ChangeEvent } from 'react'
+import { createStyles, makeStyles, Box, TextField, Grid, FormControlLabel, Checkbox } from '@material-ui/core'
+import { useState, useCallback, useMemo, useEffect, ChangeEvent } from 'react'
 import BigNumber from 'bignumber.js'
 import { v4 as uuid } from 'uuid'
 import Web3Utils from 'web3-utils'
 import { LocalizationProvider, MobileDateTimePicker } from '@material-ui/lab'
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns'
 import { useStylesExtends } from '../../../components/custom-ui-helper'
-import { EthereumStatusBar } from '../../../web3/UI/EthereumStatusBar'
 import { useI18N } from '../../../utils/i18n-next-ui'
 import { ERC20TokenDetailed, EthereumTokenType } from '../../../web3/types'
 import { useAccount } from '../../../web3/hooks/useAccount'
@@ -23,19 +22,18 @@ import { usePortalShadowRoot } from '../../../utils/shadow-root/usePortalShadowR
 import { sliceTextByUILength } from '../../../utils/getTextUILength'
 import { EthereumWalletConnectedBoundary } from '../../../web3/UI/EthereumWalletConnectedBoundary'
 import { EthereumERC20TokenApprovedBoundary } from '../../../web3/UI/EthereumERC20TokenApprovedBoundary'
+import { Flags } from '../../../utils/flags'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
         line: {
             margin: theme.spacing(1),
+            paddingBottom: theme.spacing(2),
             display: 'flex',
         },
         flow: {
             margin: theme.spacing(1),
             textAlign: 'center',
-        },
-        bar: {
-            padding: theme.spacing(0, 2, 2),
         },
         input: {
             padding: theme.spacing(1),
@@ -77,6 +75,7 @@ export function CreateForm(props: CreateFormProps) {
     const currentIdentity = useCurrentIdentity()
     const senderName = currentIdentity?.identifier.userId ?? currentIdentity?.linkedPersona?.nickname ?? 'Unknown User'
 
+    const [isMaskITO, setIsMaskITO] = useState(false)
     const [message, setMessage] = useState(origin?.title ?? '')
     const [totalOfPerWallet, setTotalOfPerWallet] = useState(
         new BigNumber(origin?.limit || '0').isZero()
@@ -129,10 +128,15 @@ export function CreateForm(props: CreateFormProps) {
         }
     }, [])
 
+    const onCheckboxChange = useCallback(() => {
+        setIsMaskITO((x) => !x)
+    }, [])
+
     useEffect(() => {
         const [first, ...rest] = tokenAndAmounts
         setTokenAndAmount(first)
         onChangePoolSettings({
+            isMask: isMaskITO,
             // this is the raw password which should be signed by the sender
             password: Web3Utils.sha3(`${message}`) ?? '',
             name: senderName,
@@ -148,6 +152,7 @@ export function CreateForm(props: CreateFormProps) {
             endTime: endTime,
         })
     }, [
+        isMaskITO,
         senderName,
         message,
         totalOfPerWallet,
@@ -235,7 +240,6 @@ export function CreateForm(props: CreateFormProps) {
     ))
     return (
         <>
-            <EthereumStatusBar classes={{ root: classes.bar }} />
             <Box className={classes.line} style={{ display: 'block' }}>
                 <ExchangeTokenPanelGroup
                     token={tokenAndAmount?.token}
@@ -279,6 +283,16 @@ export function CreateForm(props: CreateFormProps) {
             <Box className={classes.date}>
                 {StartTime} {EndTime}
             </Box>
+            {Flags.mask_ito_enabled ? (
+                <Box className={classes.line} justifyContent="flex-end">
+                    <FormControlLabel
+                        control={
+                            <Checkbox checked={isMaskITO} onChange={onCheckboxChange} name="mask_ito" color="primary" />
+                        }
+                        label="Is Mask ITO?"
+                    />
+                </Box>
+            ) : null}
             <Box className={classes.line}>
                 <EthereumWalletConnectedBoundary>
                     <EthereumERC20TokenApprovedBoundary
