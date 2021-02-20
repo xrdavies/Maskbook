@@ -2,7 +2,7 @@ import { Button, createStyles, experimentalStyled as styled, FilledInput, Tab } 
 import { ButtonGroupTabList } from '@dimensiondev/maskbook-theme'
 import React, { useState } from 'react'
 import { TabContext, TabPanel } from '@material-ui/lab'
-import { RefreshIcon } from './icons'
+import { RefreshIcon } from '@dimensiondev/icons'
 import { MnemonicReveal } from '../../components/Mnemonic'
 import { makeStyles } from '@material-ui/core/styles'
 import { MaskAlert } from '../../components/MaskAlert'
