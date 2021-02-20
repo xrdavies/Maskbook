@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { Button, experimentalStyled as styled, Typography } from '@material-ui/core'
-import { SuccessIcon } from '../../icons/status'
+import { SuccessIcon } from '@dimensiondev/icons'
 
 export interface CreateSuccessfully {
     onUnlock(): void

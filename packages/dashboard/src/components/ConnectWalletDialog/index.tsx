@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { ConnectActionList, ConnectActionListItem } from '../ConnectActionList'
-import { PolkaDotIcon, WalletConnectIcon, MetaMaskIcon } from '../../icons'
+import { PolkaDotIcon, WalletConnectIcon, MetaMaskIcon } from '@dimensiondev/icons'
 
 export enum ConnectWalletTargets {
     MetaMask,

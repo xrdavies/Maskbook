@@ -19,7 +19,7 @@ import { ErrorBoundary } from '@dimensiondev/maskbook-theme'
 import { useState, useContext } from 'react'
 import { DashboardContext } from './context'
 import { Navigation } from './Navigation'
-import { MaskbookIcon } from '../../icons'
+import { MaskNotSquareIcon } from '@dimensiondev/icons'
 import { memo } from 'react'
 
 const Root = styled(Grid)(({ theme }) => ({
@@ -154,7 +154,7 @@ export const PageFrame = memo((props: PageFrameProps) => {
                     {!isLargeScreen && (
                         <MaskLogo item container alignItems="center">
                             <MenuButton onClick={toggleDrawer}>{drawerOpen ? <CloseIcon /> : <MenuIcon />}</MenuButton>
-                            <MaskbookIcon />
+                            <MaskNotSquareIcon />
                         </MaskLogo>
                     )}
                     <PageTitle item xs={isLargeScreen ? 12 : 10} container>
