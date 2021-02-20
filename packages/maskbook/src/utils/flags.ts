@@ -42,13 +42,14 @@ export const Flags = {
     election2020_composition_dialog_enabled: false,
     COTM_enabled: webOnly,
     COTM_composition_dialog_enabled: false,
+    mask_ito_enabled: betaOrInsiderOnly,
     metamask_support_enabled: webOnly,
     //#endregion
 
     //#region Functionality missing / broken
     /**
      * - iOS: WebExtension polyfill didn't implemented the dynamic permission API
-     * - E2E: Cannot click the "allow" button (maybe a Puppeteer bug) in the Puppeteer (maybe a bug)
+     * - E2E: Cannot click the "allow" button (maybe a bug) in the Puppeteer
      */
     no_web_extension_dynamic_permission_request: is_iOSApp || process.env.target === 'E2E',
     has_no_WebRTC: process.env.target === 'safari' || !globalThis?.navigator?.permissions?.query,
